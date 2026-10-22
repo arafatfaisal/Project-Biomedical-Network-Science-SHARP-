@@ -97,7 +97,7 @@ if __name__ == "__main__":
     set_output_dir(args)
     args.logger = Logger(args.output_dir, 'log.txt')
     args.logger.write('\n'+str(args))
-    args.device = torch.device('cuda')
+    args.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     set_all_seeds(args.seed+int(args.run.split('o')[0]))
     model_path_best = os.path.join(args.output_dir, 'checkpoint_best.bin')
 
