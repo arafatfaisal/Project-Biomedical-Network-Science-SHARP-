@@ -1,0 +1,28 @@
+
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "STraTS - PhysioNet",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/src/main.py",
+            "cwd": "${workspaceFolder}/src",
+            "console": "integratedTerminal",
+            "python": "C:/Users/arafa/miniconda3/envs/strats/python.exe",
+            "args": [
+                "--dataset", "physionet_2012",
+                "--model_type", "strats",
+                "--train_frac", "0.1",
+                "--run", "1o10",
+                "--max_epochs", "1",
+                "--train_batch_size", "8",
+                "--eval_batch_size", "16",
+                "--hid_dim", "32",
+                "--num_layers", "2",
+                "--num_heads", "4",
+                "--output_dir", "../outputs/physionet_2012/strats_test"
+            ]
+        }
+    ]
+}
