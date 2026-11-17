@@ -26,6 +26,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument('--model_type', type=str, default='strats',
                         choices=['strats','istrats'])
     parser.add_argument('--load_ckpt_path', type=str, default=None)
+    parser.add_argument('--max_obs', type=int, default=880)
 
     # strats and istrats
     parser.add_argument('--hid_dim', type=int, default=32)

@@ -1,33 +1,32 @@
+
 import torch.nn as nn
 import argparse
 import torch
 import torch.nn.functional as F
 
 
-class StratsModel(nn.Module):
-    """Model base class for STRaTS models."""
-    def __init__(self, args: Namespace):
+class TimeSeriesModel(nn.Module):
+    def __init__(self, args: argparse.Namespace):
         super().__init__()
         self.args = args
 
-        # Demo embedding
         if args.model_type != 'istrats':
             self.demo_emb = nn.Sequential(
-                nn.Linear(args.D, args.hid_dim*2),
+                nn.Linear(args.D, args.hid_dim * 2),
                 nn.Tanh(),
-                nn.Linear(args.hid_dim*2, args.hid_dim)
+                nn.Linear(args.hid_dim * 2, args.hid_dim)
             )
 
-        # Compute embedding size
         if args.model_type == 'istrats':
             ts_demo_emb_size = args.hid_dim + args.D
+        elif args.model_type == 'sand':
+            ts_demo_emb_size = args.hid_dim * args.M + args.hid_dim
         else:
             ts_demo_emb_size = args.hid_dim * 2
 
         self.pretrain = args.pretrain == 1
         self.finetune = args.load_ckpt_path is not None
 
-        # Output heads
         if self.pretrain:
             self.forecast_head = nn.Linear(ts_demo_emb_size, args.V)
         elif self.finetune:
@@ -39,7 +38,6 @@ class StratsModel(nn.Module):
             self.pos_class_weight = torch.tensor(args.pos_class_weight)
 
     def binary_cls_final(self, logits, labels):
-        """Calculate binary classification loss or predictions."""
         if labels is not None:
             return F.binary_cross_entropy_with_logits(
                 logits, labels,
@@ -49,20 +47,22 @@ class StratsModel(nn.Module):
             return F.sigmoid(logits)
 
     def forecast_final(self, ts_emb, forecast_values, forecast_mask):
-        """Calculate forecast loss."""
-        pred = self.forecast_head(ts_emb)  # bsz, V
-        return (forecast_mask * (pred - forecast_values) ** 2).sum() / forecast_mask.sum()
+        pred = self.forecast_head(ts_emb)
+        return (
+            forecast_mask * (pred - forecast_values) ** 2
+        ).sum() / forecast_mask.sum()
 
 
 def count_parameters(logger, model: nn.Module):
-    """Print number of parameters in model."""
     total = sum(p.numel() for p in model.parameters())
     trainable = sum(p.numel() for p in model.parameters() if p.requires_grad)
 
     logger.write('\nModel details:')
     logger.write('# parameters: ' + str(total))
-    logger.write('# trainable parameters: ' + str(trainable) + ', ' +
-                 str(100 * trainable / total) + '%')
+    logger.write(
+        '# trainable parameters: ' + str(trainable) + ', ' +
+        str(100 * trainable / total) + '%'
+    )
 
     dtypes = {}
     for _, p in model.named_parameters():
@@ -73,4 +73,5 @@ def count_parameters(logger, model: nn.Module):
 
     logger.write('#params by dtype:')
     for k, v in dtypes.items():
-        logger.write(str(k) + ': ' + str(v) + ', ' + str(100 * v / total) + '%')
+        logger.write(str(k) + ': ' + str(v) + ', ' +
+                     str(100 * v / total) + '%')
