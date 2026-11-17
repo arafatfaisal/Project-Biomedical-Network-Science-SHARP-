@@ -5,11 +5,6 @@ import torch
 from dataset_pretrain import PretrainDataset
 from dataset import Dataset
 from modeling_strats import Strats
-from modeling_gru import GRU_TS
-from modeling_tcn import TCN_TS
-from modeling_sand import SAND
-from modeling_grud import GRUD_TS
-from modeling_interpnet import InterpNet
 import numpy as np
 from tqdm import tqdm
 from transformers.optimization import AdamW
@@ -29,27 +24,15 @@ def parse_args() -> argparse.Namespace:
 
     # model related arguments
     parser.add_argument('--model_type', type=str, default='strats',
-                        choices=['gru','tcn','sand','grud','interpnet',
-                                 'strats','istrats'])
+                        choices=['strats','istrats'])
     parser.add_argument('--load_ckpt_path', type=str, default=None)
-    ##  strats and istrats
-    parser.add_argument('--max_obs', type=int, default=880)
+
+    # strats and istrats
     parser.add_argument('--hid_dim', type=int, default=32)
     parser.add_argument('--num_layers', type=int, default=2)
     parser.add_argument('--num_heads', type=int, default=4)
     parser.add_argument('--dropout', type=float, default=0.2)
     parser.add_argument('--attention_dropout', type=float, default=0.2)
-    ## gru: hid_dim, dropout
-    ## tcn: dropout, filters=hid_dim
-    parser.add_argument('--kernel_size', type=int, default=4)
-    ## sand: num_layers, hid_dim, num_heads, dropout
-    parser.add_argument('--r', type=int, default=24)
-    parser.add_argument('--M', type=int, default=12)
-    ## grud: hid_dim, dropout
-    parser.add_argument('--max_timesteps', type=int, default=880)
-    ## interpnet: hid_dim
-    parser.add_argument('--hours_look_ahead', type=int, default=24)
-    parser.add_argument('--ref_points', type=int, default=24)
 
     # training/eval realated arguments
     parser.add_argument('--pretrain', type=int, default=0)
@@ -105,8 +88,7 @@ if __name__ == "__main__":
     dataset = PretrainDataset(args) if args.pretrain==1 else Dataset(args)
 
     # load model
-    model_class = {'strats':Strats, 'istrats':Strats, 'gru':GRU_TS, 'tcn':TCN_TS,
-                   'sand':SAND, 'grud':GRUD_TS, 'interpnet':InterpNet}
+    model_class = {'strats':Strats, 'istrats':Strats}
     model = model_class[args.model_type](args)
     model.to(args.device)
     count_parameters(args.logger, model)

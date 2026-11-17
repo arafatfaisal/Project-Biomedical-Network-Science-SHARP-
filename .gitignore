@@ -1,9 +1,62 @@
-# Local dataset files
-/data/
+# Environment files
+*.yml
+*.yaml
+lib/
+env/
+venv/
+ENV/
+.venv
+*.vcxproj
+*.vcxproj.filters
 
-# Model outputs and checkpoints
-/outputs/
-
-# Python cache files
+# Python caching
 __pycache__/
 *.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+dist/
+build/
+
+# Data files (large binary files)
+*.pkl
+*.h5
+*.hdf5
+*.npz
+*.npy
+*.ckpt
+*.bin
+*Miniconda*.exe
+*.exe
+
+# Output directories
+outputs/
+results/
+checkpoints/
+logs/
+*.log
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~.nib
+.local/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+
+# Local configuration
+.claude/settings.json
+
+# Miniconda installer
+Miniconda3-latest-Windows-x86_64.exe

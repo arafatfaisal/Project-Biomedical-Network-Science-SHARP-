@@ -1,0 +1,9 @@
+# Local dataset files
+/data/
+
+# Model outputs and checkpoints
+/outputs/
+
+# Python cache files
+__pycache__/
+*.py[cod]
